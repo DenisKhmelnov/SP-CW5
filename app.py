@@ -1,16 +1,16 @@
-from flask import Flask, render_template, request
-from base import BaseUnit
+from flask import Flask, render_template, request, redirect, url_for
+from base import BaseUnit, Arena
 from equipment import Equipment
 from classes import unit_classes
+from unit import PlayerUnit, EnemyUnit
 
 app = Flask(__name__,)
-app.config["EXPLAIN_TEMPLATE_LOADING"] = True
 heroes = {
-    "player": BaseUnit,
-    "enemy": BaseUnit
+    "player": PlayerUnit,
+    "enemy": EnemyUnit
 }
 
-arena = # TODO инициализируем класс арены
+arena = Arena()# TODO инициализируем класс арены
 
 
 @app.route("/")
@@ -87,6 +87,18 @@ def choose_hero():
             'armors': armors,
         }
         return render_template('hero_choosing.html', result=result)
+    elif request.method == "POST":
+        name = request.form['name']
+        armor_name = request.form['armor']
+        weapon_name = request.form['weapon_name']
+        unit_class = request.form['unit_class']
+        equipment = Equipment()
+        player = PlayerUnit(name=name, unit_class=unit_classes[unit_class])
+        player.equip_armor(equipment.get_armor(armor_name))
+        player.equip_weapon(equipment.get_weapon(weapon_name))
+        heroes['player'] = player
+        return redirect('choose_enemy')
+
 
 
 @app.route("/choose-enemy/", methods=['post', 'get'])
@@ -94,7 +106,31 @@ def choose_enemy():
     # TODO кнопка выбор соперников. 2 метода GET и POST
     # TODO также на GET отрисовываем форму.
     # TODO а на POST отправляем форму и делаем редирект на начало битвы
-    pass
+    if request.method == "GET":
+
+        equipment = Equipment()
+        weapons = equipment.get_weapons_names()
+        armors = equipment.get_armors_names()
+        classes = unit_classes
+
+        result = {
+            'header': 'Выберите противника',
+            'classes': classes,
+            'weapons': weapons,
+            'armors': armors,
+        }
+        return render_template('hero_choosing.html', result=result)
+    elif request.method == "POST":
+        name = request.form['name']
+        armor_name = request.form['armor']
+        weapon_name = request.form['weapon_name']
+        unit_class = request.form['unit_class']
+        equipment = Equipment()
+        enemy = EnemyUnit(name=name, unit_class=unit_classes[unit_class])
+        enemy.equip_armor(equipment.get_armor(armor_name))
+        enemy.equip_weapon(equipment.get_weapon(weapon_name))
+        heroes['enemy'] = enemy
+        return redirect(url_for('start_fight'))
 
 
 if __name__ == "__main__":
