@@ -35,7 +35,7 @@ def hit():
     if arena.game_is_running:
         result = arena.player_hit()
     else:
-        result = arena.battle_result()
+        result = arena.battle_result
     return render_template('fight.html', heroes=heroes, result=result)
 
 
@@ -90,14 +90,15 @@ def choose_hero():
     elif request.method == "POST":
         name = request.form['name']
         armor_name = request.form['armor']
-        weapon_name = request.form['weapon_name']
+        weapon_name = request.form['weapon']
         unit_class = request.form['unit_class']
         equipment = Equipment()
         player = PlayerUnit(name=name, unit_class=unit_classes[unit_class])
         player.equip_armor(equipment.get_armor(armor_name))
         player.equip_weapon(equipment.get_weapon(weapon_name))
         heroes['player'] = player
-        return redirect('choose_enemy')
+        return redirect(url_for('choose_enemy'))
+
 
 
 
@@ -123,7 +124,7 @@ def choose_enemy():
     elif request.method == "POST":
         name = request.form['name']
         armor_name = request.form['armor']
-        weapon_name = request.form['weapon_name']
+        weapon_name = request.form['weapon']
         unit_class = request.form['unit_class']
         equipment = Equipment()
         enemy = EnemyUnit(name=name, unit_class=unit_classes[unit_class])

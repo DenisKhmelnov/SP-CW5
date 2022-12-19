@@ -19,7 +19,7 @@ class Weapon:
     id: int
     name: str
     min_damage: float
-    max_damage:float
+    max_damage: float
     stamina_per_hit: float
 
     @property
@@ -42,15 +42,13 @@ class Equipment:
         for weapon in self.equipment.weapons:
             if weapon.name == weapon_name:
                 return weapon
-            else:
-                return None
+        return None
 
     def get_armor(self, armor_name) -> Optional[Armor]:
         for armor in self.equipment.armors:
             if armor.name == armor_name:
                 return armor
-            else:
-                return None
+        return None
 
     def get_weapons_names(self) -> list:
         return [weapon.name for weapon in self.equipment.weapons]
